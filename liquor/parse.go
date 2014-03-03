@@ -5,6 +5,7 @@ import (
 	"errors"
 	"io"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -44,7 +45,16 @@ func ParseLicense(raw []string) (*License, error) {
 		return nil, UnparsableTimestamp
 	}
 
-	// TODO Ignore the colorado state plane coordinates for now
+	// Colorado state plane coordinates for now
+	license.Xcoord, err = strconv.ParseFloat(raw[18], 64)
+	if err != nil {
+		return nil, UnparsableCoordinate
+	}
+	license.Ycoord, err = strconv.ParseFloat(raw[19], 64)
+	if err != nil {
+		return nil, UnparsableCoordinate
+	}
+
 	return license, nil
 }
 

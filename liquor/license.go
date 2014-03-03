@@ -2,6 +2,7 @@ package liquor
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 )
 
@@ -57,15 +58,95 @@ type License struct {
 	LicenseName string    `json:"-"`
 	Issued      time.Time `json:"issued"`
 	Expires     time.Time `json:"expires"`
-	Latitude    float64   `json:"lat"`
-	Longitude   float64   `json:"long"`
+	Xcoord      float64   `json:"x"`
+	Ycoord      float64   `json:"y"`
 }
 
 func (l *License) String() string {
 	return fmt.Sprintf("%s, %s", l.Name, l.Address)
 }
 
+// Convert the record into a string array that can be written to a CSV
+func (l *License) CSV() []string {
+	return []string{
+		l.UniqueId,
+		l.LicenseId,
+		l.Name,
+		l.Address,
+		l.Category,
+		l.LicenseName,
+		l.Issued.String(),
+		l.Expires.String(),
+		strconv.FormatFloat(l.Xcoord, 'f', 1, 64),
+		strconv.FormatFloat(l.Ycoord, 'f', 1, 64),
+	}
+}
+
 // Are the two licenses equal?
+// TODO There's not a better way to do this - use reflect
 func (l *License) Equals(other *License) bool {
-	return false
+	if l.UniqueId != other.UniqueId {
+		return false
+	}
+	if l.LicenseId != other.LicenseId {
+		return false
+	}
+	if l.Name != other.Name {
+		return false
+	}
+	if l.Address != other.Address {
+		return false
+	}
+	if l.Category != other.Category {
+		return false
+	}
+	if l.LicenseName != other.LicenseName {
+		return false
+	}
+	if l.Issued != other.Issued {
+		return false
+	}
+	if l.Expires != other.Expires {
+		return false
+	}
+	if l.Xcoord != other.Xcoord {
+		return false
+	}
+	if l.Ycoord != other.Ycoord {
+		return false
+	}
+	return true
+}
+
+type Change struct {
+	prev interface{}
+	cur  interface{}
+}
+
+// Save the changes between the licenses to a map
+func (l *License) Changes(other *License) map[string]interface{} {
+	diff := make(map[string]interface{})
+	// The unique id should never change since we're using that for mapping
+	if l.Name != other.Name {
+		diff["Name"] = Change{l.Name, other.Name}
+	}
+	if l.Address != other.Address {
+		diff["Address"] = Change{l.Address, other.Address}
+	}
+	if l.Category != other.Category {
+		diff["Category"] = Change{l.Category, other.Category}
+	}
+	if l.Issued != other.Issued {
+		diff["Issued"] = Change{l.Issued, other.Issued}
+	}
+	if l.Expires != other.Expires {
+		diff["Expires"] = Change{l.Expires, other.Expires}
+	}
+	if l.Xcoord != other.Xcoord {
+		diff["Xcoord"] = Change{l.Xcoord, other.Xcoord}
+	}
+	if l.Ycoord != other.Ycoord {
+		diff["Ycoord"] = Change{l.Ycoord, other.Ycoord}
+	}
+	return diff
 }
