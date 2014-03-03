@@ -16,7 +16,9 @@ var (
 	UnparsableCoordinate = errors.New("liquor: unparsable coordinate")
 )
 
+// TODO Assume that timestamps are mountain time?
 func ParseTimestamp(input string) (time.Time, error) {
+	// In the absence of a time zone indicator, Parse returns a time in UTC.
 	return time.Parse("2006-01-02 15:04:05", input)
 }
 

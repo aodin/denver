@@ -75,8 +75,8 @@ func (l *License) CSV() []string {
 		l.Address,
 		l.Category,
 		l.LicenseName,
-		l.Issued.String(),
-		l.Expires.String(),
+		l.Issued.Format("2006-01-02"),
+		l.Expires.Format("2006-01-02"),
 		strconv.FormatFloat(l.Xcoord, 'f', 1, 64),
 		strconv.FormatFloat(l.Ycoord, 'f', 1, 64),
 	}
