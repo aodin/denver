@@ -34,6 +34,8 @@ They can be converted to latitude and longitude using `gdaltransform`:
 
     gdaltransform -s_srs EPSG:2232 -t_srs EPSG:4326
 
+This command can be installed on Debian/Ubuntu with the package `gdal-bin`.
+
 Or as a Go command:
 
 ```go
