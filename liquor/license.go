@@ -1,12 +1,16 @@
 package liquor
 
 import (
+	"bytes"
 	"fmt"
+	"os/exec"
+	"reflect"
 	"strconv"
+	"strings"
 	"time"
 )
 
-// License
+// License layout:
 //  1. UNIQUE_ID
 //  2. BFN
 //  3. LIC_ID
@@ -27,27 +31,6 @@ import (
 // 18. OVERRIDE
 // 19. X_COORD					In CSV as floats, e.g.: 3115317.0
 // 20. Y_COORD
-// -------------
-
-// Bounding box
-// <westbc>-105.109336</westbc>
-// <eastbc>-104.671208</eastbc>
-// <northbc>39.863214</northbc>
-// <southbc>39.614990</southbc>
-
-// Categories, as of 2014-02-01
-// * LI32 - LIQUOR-3.2 % BEER			178
-// * LIRE - LIQUOR-RETAIL				204
-// * LIBW - LIQUOR-BEER & WINE			 88
-// * TAST - LIQUOR TASTING				 33
-// * LITA - LIQUOR-TAVERN				254
-// * LICL - LIQUOR-CLUB					 25
-// * LIAR - LIQUOR-ARTS					 10
-// * CAB8 - UNDERAGE CABARET PATRON		 21
-// * LIHR - LIQUOR-HOTEL/RESTAURANT		817
-// * CABA - CABARET						401
-// * LIDR - LIQUOR-DRUG STORE			  3
-// * LIBR - LIQUOR-BREW-PUB				  8
 
 type License struct {
 	UniqueId    string    `json:"id"`
@@ -56,8 +39,10 @@ type License struct {
 	Address     string    `json:"address"`
 	Category    string    `json:"type"`
 	LicenseName string    `json:"-"`
+	Description string    `json:"-"`
 	Issued      time.Time `json:"issued"`
 	Expires     time.Time `json:"expires"`
+	Status      string    `json:"status"`
 	Xcoord      float64   `json:"x"`
 	Ycoord      float64   `json:"y"`
 }
@@ -75,47 +60,55 @@ func (l *License) CSV() []string {
 		l.Address,
 		l.Category,
 		l.LicenseName,
+		l.Description,
 		l.Issued.Format("2006-01-02"),
 		l.Expires.Format("2006-01-02"),
+		l.Status,
 		strconv.FormatFloat(l.Xcoord, 'f', 1, 64),
 		strconv.FormatFloat(l.Ycoord, 'f', 1, 64),
 	}
 }
 
+// The normalized CSV output increases the number of significant digits for
+// the x and y coords, since they are now latitude and longitudes
+func (l *License) NormalizedCSV() []string {
+	return []string{
+		l.UniqueId,
+		l.LicenseId,
+		l.Name,
+		l.Address,
+		l.Category,
+		l.LicenseName,
+		l.Description,
+		l.Issued.Format("2006-01-02"),
+		l.Expires.Format("2006-01-02"),
+		l.Status,
+		strconv.FormatFloat(l.Xcoord, 'f', 8, 64),
+		strconv.FormatFloat(l.Ycoord, 'f', 8, 64),
+	}
+}
+
+func NormalizedHeader() []string {
+	return []string{
+		"UniqueId",
+		"LicenseId",
+		"Name",
+		"Address",
+		"Category",
+		"LicenseName",
+		"Description",
+		"Issued",
+		"Expires",
+		"Status",
+		"Longitude",
+		"Latitude",
+	}
+}
+
 // Are the two licenses equal?
-// TODO There's not a better way to do this - use reflect
+// TODO There's not a better way to do this - use reflect deep equals
 func (l *License) Equals(other *License) bool {
-	if l.UniqueId != other.UniqueId {
-		return false
-	}
-	if l.LicenseId != other.LicenseId {
-		return false
-	}
-	if l.Name != other.Name {
-		return false
-	}
-	if l.Address != other.Address {
-		return false
-	}
-	if l.Category != other.Category {
-		return false
-	}
-	if l.LicenseName != other.LicenseName {
-		return false
-	}
-	if l.Issued != other.Issued {
-		return false
-	}
-	if l.Expires != other.Expires {
-		return false
-	}
-	if l.Xcoord != other.Xcoord {
-		return false
-	}
-	if l.Ycoord != other.Ycoord {
-		return false
-	}
-	return true
+	return reflect.DeepEqual(l, other)
 }
 
 type Change struct {
@@ -142,6 +135,9 @@ func (l *License) Changes(other *License) map[string]interface{} {
 	if l.Expires != other.Expires {
 		diff["Expires"] = Change{l.Expires, other.Expires}
 	}
+	if l.Status != other.Status {
+		diff["Status"] = Change{l.Status, other.Status}
+	}
 	if l.Xcoord != other.Xcoord {
 		diff["Xcoord"] = Change{l.Xcoord, other.Xcoord}
 	}
@@ -149,4 +145,96 @@ func (l *License) Changes(other *License) map[string]interface{} {
 		diff["Ycoord"] = Change{l.Ycoord, other.Ycoord}
 	}
 	return diff
+}
+
+// Convert an array of licenses to latitude and longitude
+func StatePlaneToLatLong(licenses []*License) error {
+	coords := make([]string, len(licenses))
+	for i, license := range licenses {
+		coords[i] = fmt.Sprintf("%f %f", license.Xcoord, license.Ycoord)
+	}
+
+	cmd := exec.Command(
+		"gdaltransform",
+		"-s_srs",
+		"EPSG:2232",
+		"-t_srs",
+		"EPSG:4326",
+	)
+
+	// Create a single argument string
+	cmd.Stdin = strings.NewReader(strings.Join(coords, "\n"))
+
+	// Return as a bytes buffer
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	err := cmd.Run()
+	if err != nil {
+		return err
+	}
+
+	// The command returns as an x, y, and z coordinate
+	xyzs := strings.Split(out.String(), "\n")
+
+	var latlng []string
+	var lat, lng float64
+	for i, license := range licenses {
+		// Remember that longitude is an x coordinate!
+		latlng = strings.SplitN(xyzs[i], " ", 3)
+
+		lat, err = strconv.ParseFloat(latlng[1], 64)
+		if err != nil {
+			return err
+		}
+		lng, err = strconv.ParseFloat(latlng[0], 64)
+		if err != nil {
+			return err
+		}
+
+		license.Xcoord = lng
+		license.Ycoord = lat
+	}
+	return nil
+}
+
+func ById(ls []*License) (byId map[string]*License) {
+	byId = make(map[string]*License)
+	for _, license := range ls {
+		_, exists := byId[license.UniqueId]
+		if exists {
+			// log.Printf("Unique Id %s already exists on line %d\n", license.UniqueId, i + 2)
+			// TODO Are the licenses the same?
+		} else {
+			byId[license.UniqueId] = license
+		}
+	}
+	return
+}
+
+// Normalize will:
+// * Remove duplicate unique ids
+// * Convert the Colorado state plane coordinates to latitude and longitude
+// * Sort the licenses by unique id
+func Normalize(originals []*License) ([]*License, error) {
+	// Convert to a map to remove duplicates
+	// TODO This should error if duplicates aren't equal
+	mapping := ById(originals)
+
+	licenses := make([]*License, len(mapping))
+	var index int
+	for _, license := range mapping {
+		licenses[index] = license
+		index += 1
+	}
+
+	// Convert the x and y coords to latitude and longitude
+	err := StatePlaneToLatLong(licenses)
+	if err != nil {
+		return nil, err
+	}
+
+	// Sort by unique id
+	Licenses(licenses).Sort()
+
+	return licenses, nil
 }

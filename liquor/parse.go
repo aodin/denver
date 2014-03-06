@@ -33,6 +33,8 @@ func ParseLicense(raw []string) (*License, error) {
 		Address:     strings.TrimSpace(raw[4]),
 		Category:    strings.TrimSpace(raw[5]),
 		LicenseName: strings.TrimSpace(raw[7]),
+		Description: strings.TrimSpace(raw[8]),
+		Status:      strings.TrimSpace(raw[11]),
 	}
 
 	var err error
