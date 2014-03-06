@@ -53,5 +53,6 @@ func main() {
 	for _, license := range licenses {
 		ocsv.Write(license.NormalizedCSV())
 	}
+	ocsv.Flush()
 	log.Println("File written:", *output)
 }
