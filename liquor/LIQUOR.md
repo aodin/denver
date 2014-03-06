@@ -28,7 +28,7 @@ Each row in the file consists of 20 fields:
 19. X_COORD
 20. Y_COORD
 
-Fields 19` and 20 are a location of the [Colorado Central Grid](http://spatialreference.org/ref/epsg/2232/), also known as `EPSG:2232: NAD83 / Colorado Central (ftUS)`.
+Fields 19 and 20 are a location on the [Colorado Central Grid](http://spatialreference.org/ref/epsg/2232/), also known as `EPSG:2232: NAD83 / Colorado Central (ftUS)`.
 
 They can be converted to latitude and longitude using `gdaltransform`:
 
