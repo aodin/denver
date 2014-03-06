@@ -176,17 +176,17 @@ func StatePlaneToLatLong(licenses []*License) error {
 	// The command returns as an x, y, and z coordinate
 	xyzs := strings.Split(out.String(), "\n")
 
-	var latlng []string
+	var lnglat []string
 	var lat, lng float64
 	for i, license := range licenses {
 		// Remember that longitude is an x coordinate!
-		latlng = strings.SplitN(xyzs[i], " ", 3)
+		lnglat = strings.SplitN(xyzs[i], " ", 3)
 
-		lat, err = strconv.ParseFloat(latlng[1], 64)
+		lat, err = strconv.ParseFloat(lnglat[1], 64)
 		if err != nil {
 			return err
 		}
-		lng, err = strconv.ParseFloat(latlng[0], 64)
+		lng, err = strconv.ParseFloat(lnglat[0], 64)
 		if err != nil {
 			return err
 		}

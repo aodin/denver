@@ -7,15 +7,15 @@ It is updated daily.
 
 Each row in the file consists of 20 fields:
 
- 1. UNIQUE_ID
- 2. BFN
- 3. LIC_ID
- 4. BUS_PROF_NAME
- 5. FULL_ADDRESS
- 6. CODE
- 7. CATEGORY
- 8. LIC_NAME
- 9. DESCRIPTION
+1. UNIQUE_ID
+2. BFN
+3. LIC_ID
+4. BUS_PROF_NAME
+5. FULL_ADDRESS
+6. CODE
+7. CATEGORY
+8. LIC_NAME
+9. DESCRIPTION
 10. IDATE
 11. EDATE
 12. LIC_STATUS
@@ -28,8 +28,7 @@ Each row in the file consists of 20 fields:
 19. X_COORD
 20. Y_COORD
 
-Fields `19` and `20` are a location of the [Colorado Central Grid, `EPSG:2232: NAD83 / Colorado Central (ftUS)`.
-Fields `19` and `20` are a location of the [Colorado Central Grid](), `EPSG:2232: NAD83 / Colorado Central (ftUS)`.
+Fields 19` and 20 are a location of the [Colorado Central Grid](http://spatialreference.org/ref/epsg/2232/), also known as `EPSG:2232: NAD83 / Colorado Central (ftUS)`.
 
 They can be converted to latitude and longitude using `gdaltransform`:
 
@@ -65,12 +64,12 @@ if err != nil {
 // The command returns as an x, y, and z coordinate
 xyzs := strings.Split(out.String(), "\n")
 
-var latlong []string
+var lnglat []string
 for i, license := range licenses {
     // Remember the longitude is an x coordinate!
-    latlong = strings.SplitN(xyzs[i], " ", 3)
-    license[18] = latlong[1]
-    license[19] = latlong[0]
+    lnglat = strings.SplitN(xyzs[i], " ", 3)
+    license[18] = lnglat[0]
+    license[19] = lnglat[1]
 }
 ```
 
