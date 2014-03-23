@@ -28,13 +28,21 @@ func ParseLicense(raw []string) (*License, error) {
 	}
 	license := &License{
 		UniqueId:    raw[0],
+		BFN:         raw[1],
 		LicenseId:   raw[2],
 		Name:        strings.TrimSpace(raw[3]),
 		Address:     strings.TrimSpace(raw[4]),
 		Category:    strings.TrimSpace(raw[5]),
+		Code:        strings.TrimSpace(raw[6]),
 		LicenseName: strings.TrimSpace(raw[7]),
 		Description: strings.TrimSpace(raw[8]),
 		Status:      strings.TrimSpace(raw[11]),
+		AddId:       strings.TrimSpace(raw[12]),
+		ExtAddId:    strings.TrimSpace(raw[13]),
+		Police:      strings.TrimSpace(raw[14]),
+		Council:     strings.TrimSpace(raw[15]),
+		Census:      strings.TrimSpace(raw[16]),
+		Override:    strings.TrimSpace(raw[17]),
 	}
 
 	var err error

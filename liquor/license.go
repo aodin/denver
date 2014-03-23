@@ -33,18 +33,26 @@ import (
 // 20. Y_COORD
 
 type License struct {
-	UniqueId    string    `json:"id"`
-	LicenseId   string    `json:"-"`
-	Name        string    `json:"name"`
-	Address     string    `json:"address"`
+	UniqueId    string `json:"id"`
+	BFN         string
+	LicenseId   string `json:"-"`
+	Name        string `json:"name"`
+	Address     string `json:"address"`
+	Code        string
 	Category    string    `json:"type"`
 	LicenseName string    `json:"-"`
 	Description string    `json:"-"`
 	Issued      time.Time `json:"issued"`
 	Expires     time.Time `json:"expires"`
 	Status      string    `json:"status"`
-	Xcoord      float64   `json:"x"`
-	Ycoord      float64   `json:"y"`
+	AddId       string
+	ExtAddId    string
+	Police      string
+	Council     string
+	Census      string
+	Override    string
+	Xcoord      float64 `json:"x"`
+	Ycoord      float64 `json:"y"`
 }
 
 func (l *License) String() string {
@@ -55,15 +63,23 @@ func (l *License) String() string {
 func (l *License) CSV() []string {
 	return []string{
 		l.UniqueId,
+		l.BFN,
 		l.LicenseId,
 		l.Name,
 		l.Address,
+		l.Code,
 		l.Category,
 		l.LicenseName,
 		l.Description,
 		l.Issued.Format("2006-01-02"),
 		l.Expires.Format("2006-01-02"),
 		l.Status,
+		l.AddId,
+		l.ExtAddId,
+		l.Police,
+		l.Council,
+		l.Census,
+		l.Override,
 		strconv.FormatFloat(l.Xcoord, 'f', 1, 64),
 		strconv.FormatFloat(l.Ycoord, 'f', 1, 64),
 	}
@@ -74,15 +90,23 @@ func (l *License) CSV() []string {
 func (l *License) NormalizedCSV() []string {
 	return []string{
 		l.UniqueId,
+		l.BFN,
 		l.LicenseId,
 		l.Name,
 		l.Address,
+		l.Code,
 		l.Category,
 		l.LicenseName,
 		l.Description,
 		l.Issued.Format("2006-01-02"),
 		l.Expires.Format("2006-01-02"),
 		l.Status,
+		l.AddId,
+		l.ExtAddId,
+		l.Police,
+		l.Council,
+		l.Census,
+		l.Override,
 		strconv.FormatFloat(l.Xcoord, 'f', 8, 64),
 		strconv.FormatFloat(l.Ycoord, 'f', 8, 64),
 	}
@@ -91,15 +115,23 @@ func (l *License) NormalizedCSV() []string {
 func NormalizedHeader() []string {
 	return []string{
 		"UniqueId",
+		"BFN",
 		"LicenseId",
 		"Name",
 		"Address",
 		"Category",
+		"Code",
 		"LicenseName",
 		"Description",
 		"Issued",
 		"Expires",
 		"Status",
+		"AddId",
+		"ExtAddId",
+		"Police",
+		"Council",
+		"Census",
+		"Override",
 		"Longitude",
 		"Latitude",
 	}
