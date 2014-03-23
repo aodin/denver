@@ -1,0 +1,22 @@
+CREATE TABLE "licenses" (
+    "id" varchar PRIMARY KEY,
+    "bfn" varchar,
+    "license" varchar,
+    "name" varchar,
+    "address" varchar,
+    "code" varchar,
+    "category" varchar,
+    "license_name" varchar,
+    "description" varchar,
+    "issued" timestamp,
+    "expires" timestamp,
+    "status" varchar,
+    "add_id" varchar,
+    "external_address_id" varchar,
+    "police_district" varchar,
+    "council_district" varchar,
+    "census_tract" varchar,
+    "override" varchar,
+    "longitude" real,
+    "latitude" real
+);
