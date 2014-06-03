@@ -29,12 +29,12 @@ type Schedule struct {
 }
 
 type Fixed struct {
-	Id     int64           `json:"id"`
-	Months string          `json:"months"`
-	Week   string          `json:"week"`
-	Days   string          `json:"days"`
-	Posted string          `json:"posted"`
-	Area   geojson.Polygon `json:"area"`
+	Id       int64           `json:"id"`
+	Months   string          `json:"months"`
+	Week     string          `json:"week"`
+	Days     string          `json:"days"`
+	Posted   string          `json:"posted"`
+	Geometry geojson.Polygon `json:"geometry"`
 }
 
 func Convert(s Schedule) (f Fixed) {
@@ -43,7 +43,7 @@ func Convert(s Schedule) (f Fixed) {
 	f.Week = s.Week
 	f.Days = s.Days
 	f.Posted = s.Posted
-	json.Unmarshal(s.Polygon, &f.Area)
+	json.Unmarshal(s.Polygon, &f.Geometry)
 	return
 }
 
