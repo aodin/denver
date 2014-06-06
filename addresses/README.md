@@ -31,7 +31,15 @@ SELECT DISTINCT "street_type" FROM "addresses";
 Using a `GROUP BY`:
 
 ```sql
-SELECT "street_type" AS "type", COUNT("address") AS "count" FROM "addresses" GROUP BY "street_type" ORDER BY "count" DESC;
+SELECT
+    "street_type" AS "type",
+    COUNT("address") AS "count"
+FROM
+    "addresses"
+GROUP BY
+    "street_type"
+ORDER BY
+    "count" DESC;
 ```
 
 type | count  

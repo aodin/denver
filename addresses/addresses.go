@@ -3,16 +3,27 @@ package addresses
 import ()
 
 type Address struct {
-	Latitude   float64
-	Longitude  float64
-	Full       string
-	Number     int
-	PreDir     string
-	Street     string
-	PostType   string
-	PostDir    string
-	UnitType   string
-	UnitNumber string
+	Type              string
+	X                 float64 // Likely the Colorado State Plane
+	Y                 float64 // Likely the Colorado State Plane
+	Latitude          float64
+	Longitude         float64
+	NumberPrefix      string
+	Number            string
+	NumberSuffix      string
+	PreModifier       string
+	PreDirection      string
+	Street            string
+	StreetType        string
+	PostDirection     string
+	PostModifier      string
+	BuildingType      string
+	BuildingId        string
+	UnitType          string
+	UnitNumber        string
+	CompositeUnitType string
+	CompositeUnitId   string
+	Full              string
 }
 
 func (a Address) String() string {
