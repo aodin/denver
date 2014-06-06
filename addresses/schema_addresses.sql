@@ -25,7 +25,5 @@ CREATE TABLE "addresses" (
 -- CREATE INDEX ON "addresses" ((lower("street")));
 -- CREATE INDEX ON "addresses" ((lower("number")));
 -- CREATE INDEX ON "addresses" ((lower("address")));
-
-CREATE EXTENSION "pg_trgm";
-
-CREATE INDEX ON "addresses" USING gin("address" gin_trgm_ops);
+-- CREATE EXTENSION "pg_trgm";
+-- CREATE INDEX ON "addresses" USING gin("address" gin_trgm_ops);
