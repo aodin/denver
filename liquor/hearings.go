@@ -1,7 +1,9 @@
 package liquor
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/aodin/aspect"
 	"github.com/aodin/denver/geocode"
 	"github.com/moovweb/gokogiri"
 	"github.com/moovweb/gokogiri/xml"
@@ -11,6 +13,7 @@ import (
 	"time"
 )
 
+// rawHearing is an unparsed hearing
 type rawHearing struct {
 	Link    string
 	Name    string
@@ -19,6 +22,17 @@ type rawHearing struct {
 	Time    string
 	Outcome string
 }
+
+var Hearings = aspect.Table("hearings",
+	aspect.Column("id", aspect.Integer{PrimaryKey: true}),
+	aspect.Column("notice_link", aspect.String{}),
+	aspect.Column("name", aspect.String{}),
+	aspect.Column("address", aspect.String{}),
+	aspect.Column("latitude", aspect.Real{}),
+	aspect.Column("longitude", aspect.Real{}),
+	aspect.Column("time", aspect.Timestamp{}),
+	aspect.Column("outcome", aspect.String{}),
+)
 
 // Hearing is a public hearing with a time and location
 type Hearing struct {
@@ -30,6 +44,11 @@ type Hearing struct {
 	Longitude  float64   `json:"longitude"`
 	Time       time.Time `json:"time"`
 	Outcome    string    `json:"outcome"`
+}
+
+func ParseHearingsJSON(contents []byte) (hearings []Hearing, err error) {
+	err = json.Unmarshal(contents, &hearings)
+	return
 }
 
 var layout = `Jan 02, 2006 3:04 PM`

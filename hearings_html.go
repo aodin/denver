@@ -2,11 +2,11 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"github.com/aodin/denver/geocode"
 	"github.com/aodin/denver/liquor"
 	"io/ioutil"
-	"flag"
 	"os"
 )
 
