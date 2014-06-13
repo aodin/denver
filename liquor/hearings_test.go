@@ -15,6 +15,7 @@ func (g testGeocoder) Geocode(address string) (lat, lng float64, err error) {
 }
 
 var example = rawHearing{
+	Link:    "NoticeBody.aspx?id=1794",
 	Name:    "7 - Eleven Store 37016a",
 	Address: "4922 N Willow St",
 	Date:    "Jun 25, 2014",
@@ -30,7 +31,7 @@ func TestConvert(t *testing.T) {
 
 	loc, err := time.LoadLocation("America/Denver")
 	if err != nil {
-		t.Fatalf("could not load Mountain timezone")
+		t.Fatalf("Could not load Mountain timezone")
 	}
 	x := time.Date(2014, time.June, 25, 9, 0, 0, 0, loc).String()
 	// TODO Why do I have to call Stirng()?
@@ -38,6 +39,12 @@ func TestConvert(t *testing.T) {
 		t.Errorf("Unexpected time: %s != %s", hearing.Time, x)
 	}
 
+	if hearing.Id != 1794 {
+		t.Errorf("Unexpected id: %d", hearing.Id)
+	}
+	if hearing.NoticeLink != (urlRoot + example.Link) {
+		t.Errorf("Unexpected notice link: %s", hearing.NoticeLink)
+	}
 	if hearing.Name != "7 - Eleven Store 37016a" {
 		t.Errorf("Unexpected name: %s", hearing.Name)
 	}
@@ -65,7 +72,7 @@ func TestParseHTML(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	hearings, err := ParseHTML(content)
+	hearings, err := ParseHearingsHTML(content)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -76,6 +83,9 @@ func TestParseHTML(t *testing.T) {
 
 	// Examine the first hearing
 	h := hearings[0]
+	if h.Link != "NoticeBody.aspx?id=1794" {
+		t.Errorf("Unexpected parsed link: %s", h.Link)
+	}
 	if h.Name != "7 - Eleven Store 37016a" {
 		t.Errorf("Unexpected parsed name: %s", h.Name)
 	}
@@ -90,5 +100,12 @@ func TestParseHTML(t *testing.T) {
 	}
 	if h.Outcome != "Pending" {
 		t.Errorf("Unexpected parsed outcome: %s", h.Name)
+	}
+
+	// Convert all hearings
+	tg := testGeocoder{}
+	_, err = CleanHearings(hearings, tg)
+	if err != nil {
+		t.Errorf("Error during hearing conversion: %s", err)
 	}
 }

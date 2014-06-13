@@ -33,26 +33,26 @@ import (
 // 20. Y_COORD
 
 type License struct {
-	UniqueId    string `json:"id"`
-	BFN         string
-	LicenseId   string `json:"-"`
-	Name        string `json:"name"`
-	Address     string `json:"address"`
-	Code        string
-	Category    string    `json:"type"`
-	LicenseName string    `json:"-"`
-	Description string    `json:"-"`
-	Issued      time.Time `json:"issued"`
-	Expires     time.Time `json:"expires"`
-	Status      string    `json:"status"`
-	AddId       string
-	ExtAddId    string
-	Police      string
-	Council     string
-	Census      string
-	Override    string
-	Xcoord      float64 `json:"x"`
-	Ycoord      float64 `json:"y"`
+	UniqueId    string    `db:"id" json:"id"`
+	BFN         string    `db:"bfn"`
+	LicenseId   string    `db:"license" json:"-"`
+	Name        string    `db:"name" json:"name"`
+	Address     string    `db:"address" json:"address"`
+	Code        string    `db:"code"`
+	Category    string    `db:"category" json:"type"`
+	LicenseName string    `db:"license_name" json:"-"`
+	Description string    `db:"description" json:"-"`
+	Issued      time.Time `db:"issued" json:"issued"`
+	Expires     time.Time `db:"expires" json:"expires"`
+	Status      string    `db:"status" json:"status"`
+	AddId       string    `db:"add_id"`
+	ExtAddId    string    `db:"external_address_id"`
+	Police      string    `db:"police_district"`
+	Council     string    `db:"council_district"`
+	Census      string    `db:"census_tract"`
+	Override    string    `db:"override"`
+	Xcoord      float64   `db:"longitude" json:"x"`
+	Ycoord      float64   `db:"latitude" json:"y"`
 }
 
 func (l *License) String() string {

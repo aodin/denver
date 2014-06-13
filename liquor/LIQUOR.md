@@ -1,7 +1,11 @@
 Liquor
 ======
 
-Public hearings are listed on an HTML page: http://www.denvergov.org/businesslicensing/DenverBusinessLicensingCenter/PublicHearingSchedule/tabid/441585/Default.aspx
+### Hearings
+
+Public hearings are listed on [denvergov.org](http://www.denvergov.org/businesslicensing/DenverBusinessLicensingCenter/PublicHearingSchedule/tabid/441585/Default.aspx), which contains an inner frame with the [Hearing Viewer Application](http://www.denvergov.org/HearingViewerApplication/default.aspx).
+
+### Licenses
 
 A full list of liquor licenses is available from the City of Denver on [data.denvergov.org](http://data.denvergov.org/dataset/city-and-county-of-denver-liquor-licenses).
 

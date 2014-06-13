@@ -90,7 +90,7 @@ func (g *google) Geocode(address string) (lat, lng float64, err error) {
 	return
 }
 
-var Google = google{
+var Google = &google{
 	rate:   9,
 	rawurl: `https://maps.googleapis.com/maps/api/geocode/json`,
 }
