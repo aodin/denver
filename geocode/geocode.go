@@ -10,7 +10,7 @@ import (
 )
 
 type Geocoder interface {
-	Geocode(address string) (lat, lng float64)
+	Geocode(address string) (lat, lng float64, err error)
 }
 
 // Users of the free API:

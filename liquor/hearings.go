@@ -1,6 +1,7 @@
 package liquor
 
 import (
+	"github.com/aodin/denver/geocode"
 	"github.com/moovweb/gokogiri"
 	"github.com/moovweb/gokogiri/xml"
 	"strings"
@@ -13,6 +14,30 @@ type rawHearing struct {
 	Date    string
 	Time    string
 	Outcome string
+}
+
+var layout = `Jan 02, 2006 3:04 AM`
+
+func (r rawHearing) Convert(g geocode.Geocoder) (h Hearing, err error) {
+	// Copy the strings
+	h.Name = r.Name
+	h.Address = r.Address
+	h.Outcome = r.Outcome
+
+	// Get the Mountain timezone
+	loc, err := time.LoadLocation("America/Denver")
+	if err != nil {
+		return
+	}
+	// Parse the time
+	h.Time, err = time.ParseInLocation(layout, r.Date+" "+r.Time, loc)
+	if err != nil {
+		return
+	}
+
+	// Perform geolocation on the address
+	h.Latitude, h.Longitude, err = g.Geocode(r.Address)
+	return
 }
 
 // TODO Perform geolocation
