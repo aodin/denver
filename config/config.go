@@ -41,6 +41,11 @@ func Parse() (Config, error) {
 	return ParseFile("./settings.json")
 }
 
+func ParseDatabase() (DatabaseConfig, error) {
+	c, err := ParseFile("./settings.json")
+	return c.Database, err
+}
+
 func ParseFile(filename string) (Config, error) {
 	f, err := os.Open(filename)
 	if err != nil {

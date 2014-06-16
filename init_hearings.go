@@ -42,7 +42,8 @@ func main() {
 	flag.StringVar(&load, "load", "", "load the given file")
 	flag.Parse()
 
-	config, err := config.Parse()
+	// Get the database driver
+	config, err := config.ParseDatabase()
 	if err != nil {
 		panic(err)
 	}
