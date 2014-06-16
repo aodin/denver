@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/aodin/aspect"
+	"github.com/aodin/denver/config"
 	"github.com/aodin/denver/liquor"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
@@ -43,6 +44,7 @@ type API struct {
 	db        *aspect.DB
 	resources Resources
 	router    *httprouter.Router
+	config    config.Config
 }
 
 // Resources lists the available resources
@@ -76,9 +78,9 @@ func (a *API) Add(name string, resource Resource) error {
 }
 
 func (a *API) ListenAndServe() error {
-	// TODO Config
-	fmt.Println("Starting on :8080")
-	return http.ListenAndServe(":8080", a.router)
+	address := fmt.Sprintf(":%d", a.config.Port)
+	fmt.Printf("Starting on %s\n", address)
+	return http.ListenAndServe(address, a.router)
 }
 
 // TODO Root should include all attached APIs
@@ -86,12 +88,13 @@ func Root(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	w.Write([]byte(fmt.Sprintf(`{"version %d": "/v%d/"}`, 1, 1)))
 }
 
-func New(db *aspect.DB) *API {
+func New(c config.Config, db *aspect.DB) *API {
 	a := &API{
 		version:   1,
 		db:        db,
 		resources: make(Resources),
 		router:    httprouter.New(),
+		config:    c,
 	}
 	a.router.GET("/", Root)
 	a.router.GET("/v1/", a.Resources)

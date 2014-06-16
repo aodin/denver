@@ -9,21 +9,22 @@ import (
 
 func main() {
 	// Get config
-	config, err := config.Parse()
+	c, err := config.Parse()
 	if err != nil {
 		panic(err)
 	}
+
 	// Connect
 	db, err := aspect.Connect(
-		config.Driver,
-		config.Credentials(),
+		c.Database.Driver,
+		c.Database.Credentials(),
 	)
 	if err != nil {
 		panic(err)
 	}
 	defer db.Close()
 
-	a := api.New(db)
+	a := api.New(c, db)
 	if err = a.ListenAndServe(); err != nil {
 		panic(err)
 	}

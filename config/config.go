@@ -8,6 +8,11 @@ import (
 	"os"
 )
 
+type Config struct {
+	Port     int            `json:"port"`
+	Database DatabaseConfig `json:"database"`
+}
+
 type DatabaseConfig struct {
 	Driver   string `json:"driver"`
 	Host     string `json:"host"`
@@ -32,20 +37,20 @@ func (db DatabaseConfig) Credentials() string {
 
 // By default, the parser will look for a file called settings.json in
 // current directory.
-func Parse() (DatabaseConfig, error) {
+func Parse() (Config, error) {
 	return ParseFile("./settings.json")
 }
 
-func ParseFile(filename string) (DatabaseConfig, error) {
+func ParseFile(filename string) (Config, error) {
 	f, err := os.Open(filename)
 	if err != nil {
-		return DatabaseConfig{}, err
+		return Config{}, err
 	}
 	return parse(f)
 }
 
-func parse(f io.Reader) (DatabaseConfig, error) {
-	var c DatabaseConfig
+func parse(f io.Reader) (Config, error) {
+	var c Config
 	contents, err := ioutil.ReadAll(f)
 	if err != nil {
 		return c, err
