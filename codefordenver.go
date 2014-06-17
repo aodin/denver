@@ -1,11 +1,22 @@
 package main
 
 import (
+	"fmt"
+	"github.com/aodin/argo"
 	"github.com/aodin/aspect"
 	_ "github.com/aodin/aspect/postgres"
-	"github.com/aodin/denver/api"
-	"github.com/aodin/denver/config"
+	"github.com/aodin/denver/liquor"
+	"github.com/aodin/volta/config"
+	"github.com/julienschmidt/httprouter"
+	"net/http"
 )
+
+func Root(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Write([]byte(`{
+    "version 1": "/v1/"
+}`))
+}
 
 func main() {
 	// Get config
@@ -24,8 +35,17 @@ func main() {
 	}
 	defer db.Close()
 
-	a := api.New(c, db)
-	if err = a.ListenAndServe(); err != nil {
+	router := httprouter.New()
+
+	router.GET("/", Root)
+
+	baseURL := "/v1"
+	api := argo.New(c, router, baseURL)
+	api.Add("hearings", liquor.NewHearingsAPI(db))
+
+	address := fmt.Sprintf(":%d", c.Port)
+	fmt.Printf("Starting on %s\n", address)
+	if err = http.ListenAndServe(address, router); err != nil {
 		panic(err)
 	}
 }
