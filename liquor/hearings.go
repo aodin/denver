@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/aodin/aspect"
+	"github.com/aodin/aspect/postgis"
 	"github.com/aodin/denver/geocode"
 	"github.com/moovweb/gokogiri"
 	"github.com/moovweb/gokogiri/xml"
@@ -32,6 +33,7 @@ var Hearings = aspect.Table("hearings",
 	aspect.Column("longitude", aspect.Real{}),
 	aspect.Column("time", aspect.Timestamp{}),
 	aspect.Column("outcome", aspect.String{}),
+	aspect.Column("location", postgis.Geometry{postgis.Point{}, 4326}),
 )
 
 // Hearing is a public hearing with a time and location
@@ -59,7 +61,7 @@ func CleanHearings(raws []rawHearing, g geocode.Geocoder) ([]Hearing, error) {
 	for i, raw := range raws {
 		hearing, err := raw.Convert(g)
 		if err != nil {
-			fmt.Errorf("Error while convert hearing %d: %s", i, err)
+			return hearings, fmt.Errorf("Error while convert hearing %d: %s", i, err)
 		}
 		hearings[i] = hearing
 	}

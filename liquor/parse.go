@@ -22,11 +22,11 @@ func ParseTimestamp(input string) (time.Time, error) {
 	return time.Parse("2006-01-02 15:04:05", input)
 }
 
-func ParseLicense(raw []string) (*License, error) {
+func ParseLicense(raw []string) (License, error) {
 	if len(raw) != 20 {
-		return nil, UnexpectedLength
+		return License{}, UnexpectedLength
 	}
-	license := &License{
+	l := License{
 		UniqueId:    raw[0],
 		BFN:         raw[1],
 		LicenseId:   raw[2],
@@ -47,31 +47,30 @@ func ParseLicense(raw []string) (*License, error) {
 
 	var err error
 	// Parse the Issued and Expires timestamps
-	license.Issued, err = ParseTimestamp(raw[9])
+	l.Issued, err = ParseTimestamp(raw[9])
 	if err != nil {
-		return nil, UnparsableTimestamp
+		return l, UnparsableTimestamp
 	}
 
-	license.Expires, err = ParseTimestamp(raw[10])
+	l.Expires, err = ParseTimestamp(raw[10])
 	if err != nil {
-		return nil, UnparsableTimestamp
+		return l, UnparsableTimestamp
 	}
 
 	// Colorado state plane coordinates for now
-	license.Xcoord, err = strconv.ParseFloat(raw[18], 64)
+	l.Xcoord, err = strconv.ParseFloat(raw[18], 64)
 	if err != nil {
-		return nil, UnparsableCoordinate
+		return l, UnparsableCoordinate
 	}
-	license.Ycoord, err = strconv.ParseFloat(raw[19], 64)
+	l.Ycoord, err = strconv.ParseFloat(raw[19], 64)
 	if err != nil {
-		return nil, UnparsableCoordinate
+		return l, UnparsableCoordinate
 	}
-
-	return license, nil
+	return l, nil
 }
 
-func ParseLicensesCSV(path string) ([]*License, error) {
-	licenses := make([]*License, 0)
+func ParseLicensesCSV(path string) ([]License, error) {
+	licenses := make([]License, 0)
 	file, err := os.Open(path)
 	if err != nil {
 		return licenses, err
@@ -101,5 +100,4 @@ func ParseLicensesCSV(path string) ([]*License, error) {
 		}
 		licenses = append(licenses, license)
 	}
-
 }

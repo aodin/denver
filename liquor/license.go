@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os/exec"
 	"reflect"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -34,33 +35,33 @@ import (
 
 type License struct {
 	UniqueId    string    `db:"id" json:"id"`
-	BFN         string    `db:"bfn"`
+	BFN         string    `db:"bfn" json:"-"`
 	LicenseId   string    `db:"license" json:"-"`
 	Name        string    `db:"name" json:"name"`
 	Address     string    `db:"address" json:"address"`
-	Code        string    `db:"code"`
+	Code        string    `db:"code" json:"-"`
 	Category    string    `db:"category" json:"type"`
 	LicenseName string    `db:"license_name" json:"-"`
 	Description string    `db:"description" json:"-"`
-	Issued      time.Time `db:"issued" json:"issued"`
-	Expires     time.Time `db:"expires" json:"expires"`
+	Issued      time.Time `db:"issued" json:"issued" csv:"2006-01-02"`
+	Expires     time.Time `db:"expires" json:"expires" csv:"2006-01-02"`
 	Status      string    `db:"status" json:"status"`
-	AddId       string    `db:"add_id"`
-	ExtAddId    string    `db:"external_address_id"`
-	Police      string    `db:"police_district"`
-	Council     string    `db:"council_district"`
-	Census      string    `db:"census_tract"`
-	Override    string    `db:"override"`
-	Xcoord      float64   `db:"longitude" json:"x"`
-	Ycoord      float64   `db:"latitude" json:"y"`
+	AddId       string    `db:"add_id" json:"-"`
+	ExtAddId    string    `db:"external_address_id" json:"-"`
+	Police      string    `db:"police_district" json:"-"`
+	Council     string    `db:"council_district" json:"-"`
+	Census      string    `db:"census_tract" json:"-"`
+	Override    string    `db:"override" json:"-"`
+	Xcoord      float64   `db:"longitude" json:"longitude"`
+	Ycoord      float64   `db:"latitude" json:"latitude"`
 }
 
-func (l *License) String() string {
+func (l License) String() string {
 	return fmt.Sprintf("%s, %s", l.Name, l.Address)
 }
 
 // Convert the record into a string array that can be written to a CSV
-func (l *License) CSV() []string {
+func (l License) CSV() []string {
 	return []string{
 		l.UniqueId,
 		l.BFN,
@@ -87,7 +88,7 @@ func (l *License) CSV() []string {
 
 // The normalized CSV output increases the number of significant digits for
 // the x and y coords, since they are now latitude and longitudes
-func (l *License) NormalizedCSV() []string {
+func (l License) NormalizedCSV() []string {
 	return []string{
 		l.UniqueId,
 		l.BFN,
@@ -139,7 +140,7 @@ func NormalizedHeader() []string {
 
 // Are the two licenses equal?
 // TODO There's not a better way to do this - use reflect deep equals
-func (l *License) Equals(other *License) bool {
+func (l License) Equals(other License) bool {
 	return reflect.DeepEqual(l, other)
 }
 
@@ -149,7 +150,7 @@ type Change struct {
 }
 
 // Save the changes between the licenses to a map
-func (l *License) Changes(other *License) map[string]interface{} {
+func (l License) Changes(other License) map[string]interface{} {
 	diff := make(map[string]interface{})
 	// The unique id should never change since we're using that for mapping
 	if l.Name != other.Name {
@@ -180,7 +181,7 @@ func (l *License) Changes(other *License) map[string]interface{} {
 }
 
 // Convert an array of licenses to latitude and longitude
-func StatePlaneToLatLong(licenses []*License) error {
+func StatePlaneToLatLong(licenses []License) error {
 	coords := make([]string, len(licenses))
 	for i, license := range licenses {
 		coords[i] = fmt.Sprintf("%f %f", license.Xcoord, license.Ycoord)
@@ -229,8 +230,8 @@ func StatePlaneToLatLong(licenses []*License) error {
 	return nil
 }
 
-func ById(ls []*License) (byId map[string]*License) {
-	byId = make(map[string]*License)
+func ById(ls []License) (byId map[string]License) {
+	byId = make(map[string]License)
 	for _, license := range ls {
 		_, exists := byId[license.UniqueId]
 		if exists {
@@ -247,12 +248,12 @@ func ById(ls []*License) (byId map[string]*License) {
 // * Remove duplicate unique ids
 // * Convert the Colorado state plane coordinates to latitude and longitude
 // * Sort the licenses by unique id
-func Normalize(originals []*License) ([]*License, error) {
+func Normalize(originals []License) ([]License, error) {
 	// Convert to a map to remove duplicates
 	// TODO This should error if duplicates aren't equal
 	mapping := ById(originals)
 
-	licenses := make([]*License, len(mapping))
+	licenses := make([]License, len(mapping))
 	var index int
 	for _, license := range mapping {
 		licenses[index] = license
@@ -266,7 +267,31 @@ func Normalize(originals []*License) ([]*License, error) {
 	}
 
 	// Sort by unique id
-	Licenses(licenses).Sort()
+	OrderedLicenses(licenses).Sort()
 
 	return licenses, nil
+}
+
+type OrderedLicenses []License
+
+// Implement the sort.Interface for sorting
+func (a OrderedLicenses) Len() int {
+	return len(a)
+}
+
+func (a OrderedLicenses) Swap(i, j int) {
+	a[i], a[j] = a[j], a[i]
+}
+
+type ByUniqueId struct {
+	OrderedLicenses
+}
+
+// Sort by the unique Id string
+func (a ByUniqueId) Less(i, j int) bool {
+	return a.OrderedLicenses[i].UniqueId > a.OrderedLicenses[j].UniqueId
+}
+
+func (a OrderedLicenses) Sort() {
+	sort.Sort(ByUniqueId{a})
 }

@@ -20,3 +20,9 @@ CREATE TABLE "licenses" (
     "longitude" real,
     "latitude" real
 );
+
+ALTER TABLE "licenses" ADD COLUMN "location" geography(Point);
+
+UPDATE "licenses" SET "location" = ST_SetSRID(ST_MakePoint("longitude", "latitude"), 4326)::geography;
+
+CREATE INDEX ON "licenses" USING GIST ("location");

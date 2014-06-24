@@ -42,6 +42,7 @@ func main() {
 	baseURL := "/v1"
 	api := argo.New(c, router, baseURL)
 	api.Add("hearings", liquor.NewHearingsAPI(db))
+	api.Add("licenses", liquor.NewLicensesAPI(db))
 
 	address := fmt.Sprintf(":%d", c.Port)
 	fmt.Printf("Starting on %s\n", address)
