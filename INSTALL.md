@@ -34,3 +34,12 @@ The following third party packages have additional requirements.
 [Gokogiri](https://github.com/moovweb/gokogiri) is used to scrap HTML. It requires the following packages on Ubuntu 12.04:
 
     sudo apt-get install libxml2-dev pkg-config
+
+
+### PostGIS
+
+    sudo apt-get install postgis
+
+Enable the extension on the PostGres database:
+
+    CREATE EXTENSION postgis;
