@@ -181,7 +181,9 @@ func (l License) Changes(other License) map[string]interface{} {
 }
 
 // Convert an array of licenses to latitude and longitude
-func StatePlaneToLatLong(licenses []License) error {
+func StatePlaneToLatLong(licenses []License) ([]License, error) {
+	converted := make([]License, len(licenses))
+
 	coords := make([]string, len(licenses))
 	for i, license := range licenses {
 		coords[i] = fmt.Sprintf("%f %f", license.Xcoord, license.Ycoord)
@@ -203,7 +205,7 @@ func StatePlaneToLatLong(licenses []License) error {
 	cmd.Stdout = &out
 	err := cmd.Run()
 	if err != nil {
-		return err
+		return converted, err
 	}
 
 	// The command returns as an x, y, and z coordinate
@@ -217,17 +219,18 @@ func StatePlaneToLatLong(licenses []License) error {
 
 		lat, err = strconv.ParseFloat(lnglat[1], 64)
 		if err != nil {
-			return err
+			return converted, err
 		}
 		lng, err = strconv.ParseFloat(lnglat[0], 64)
 		if err != nil {
-			return err
+			return converted, err
 		}
 
 		license.Xcoord = lng
 		license.Ycoord = lat
+		converted[i] = license
 	}
-	return nil
+	return converted, nil
 }
 
 func ById(ls []License) (byId map[string]License) {
@@ -261,15 +264,15 @@ func Normalize(originals []License) ([]License, error) {
 	}
 
 	// Convert the x and y coords to latitude and longitude
-	err := StatePlaneToLatLong(licenses)
+	converted, err := StatePlaneToLatLong(licenses)
 	if err != nil {
 		return nil, err
 	}
 
 	// Sort by unique id
-	OrderedLicenses(licenses).Sort()
+	OrderedLicenses(converted).Sort()
 
-	return licenses, nil
+	return converted, nil
 }
 
 type OrderedLicenses []License
