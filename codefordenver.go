@@ -5,6 +5,7 @@ import (
 	"github.com/aodin/argo"
 	"github.com/aodin/aspect"
 	_ "github.com/aodin/aspect/postgres"
+	"github.com/aodin/denver/grocery"
 	"github.com/aodin/denver/liquor"
 	"github.com/aodin/volta/config"
 	"github.com/julienschmidt/httprouter"
@@ -43,6 +44,7 @@ func main() {
 	api := argo.New(c, router, baseURL)
 	api.Add("hearings", liquor.NewHearingsAPI(db))
 	api.Add("licenses", liquor.NewLicensesAPI(db))
+	api.Add("stores", grocery.NewStoresAPI(db))
 
 	address := fmt.Sprintf(":%d", c.Port)
 	fmt.Printf("Starting on %s\n", address)

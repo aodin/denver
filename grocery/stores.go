@@ -3,11 +3,13 @@ package grocery
 import (
 	"github.com/aodin/aspect"
 	"github.com/aodin/aspect/postgis"
+	"github.com/aodin/aspect/postgres"
 )
 
 var Stores = aspect.Table("grocery_stores",
-	aspect.Column("id", aspect.Integer{PrimaryKey: true}),
+	aspect.Column("id", postgres.Serial{PrimaryKey: true}),
 	aspect.Column("name", aspect.String{}),
+	aspect.Column("type", aspect.String{}),
 	aspect.Column("phone", aspect.String{}),
 	aspect.Column("hours", aspect.String{}),
 	aspect.Column("accepts_snap", aspect.Boolean{}),

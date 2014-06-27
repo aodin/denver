@@ -81,3 +81,27 @@ type Store struct {
 	State         string
 	ZIP           string
 }
+
+type StoreWithId struct {
+	Id            int64   `json:"id"`
+	Name          string  `json:"name"`
+	Type          string  `json:"type"`
+	Phone         string  `json:"phone"`
+	Hours         string  `json:"hours"`
+	AcceptsSnap   bool    `json:"accepts_snap"`
+	SIC           int64   `json:"SIC"`
+	NAICS         int64   `json:"NAICS"`
+	SalesVolume   int64   `json:"sales_volume"`
+	BranchStatus  string  `json:"branch_status"`
+	Employees     int64   `json:"employees"`
+	Franchise     string  `json:"franchise"`
+	SquareFootage string  `json:"square_footage"`
+	Latitude      float64 `json:"latitude"`
+	Longitude     float64 `json:"longitude"`
+	Address       string  `json:"address"`
+	AddressLine1  string  `json:"address_line_1"`
+	AddressLine2  string  `json:"address_line_2"`
+	City          string  `json:"city"`
+	State         string  `json:"state"`
+	ZIP           string  `json:"zip"`
+}
