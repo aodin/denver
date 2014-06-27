@@ -1,0 +1,10 @@
+OFFENSE_CODE,OFFENSE_CODE_EXTENSION,OFFENSE_TYPE_ID,OFFENSE_TYPE_NAME,OFFENSE_CATEGORY_ID,OFFENSE_CATEGORY_NAME,IS_CRIME,IS_TRAFFIC
+2804,1,stolen-property-possession,Possession of stolen property,all-other-crimes,All Other Crimes,1,0
+2804,2,fraud-possess-financial-device,Possession of a financial device,all-other-crimes,All Other Crimes,1,0
+2901,0,damaged-prop-bus,Damaged business property,public-disorder,Public Disorder,1,0
+2902,0,criminal-mischief-private,Criminal mischief to private property,public-disorder,Public Disorder,1,0
+2903,0,criminal-mischief-public,Criminal mischief to public property,public-disorder,Public Disorder,1,0
+2999,0,criminal-mischief-other,Criminal mischief - other,public-disorder,Public Disorder,1,0
+2999,1,criminal-mischief-mtr-veh,Criminal mischief to a motor vehicle,public-disorder,Public Disorder,1,0
+2999,2,criminal-mischief-graffiti,Criminal mischief - graffiti,public-disorder,Public Disorder,1,0
+5441,0,traffic-accident,Traffic accident,traffic-accident,Traffic Accident,0,1
