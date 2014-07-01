@@ -1,4 +1,4 @@
-CREATE TABLE "crimes" (
+CREATE TABLE "raw_crimes" (
     "id" varchar,
     "offense_id" varchar,
     "offense_code" varchar,
@@ -17,3 +17,15 @@ CREATE TABLE "crimes" (
     "precinct" varchar,
     "neighborhood" varchar
 );
+
+CREATE TABLE "offense_codes" (
+  "id" VARCHAR PRIMARY KEY,
+  "code" INTEGER,
+  "extension" INTEGER,
+  "description" VARCHAR,
+  "category" VARCHAR,
+  "is_crime" BOOL,
+  "is_traffic" BOOL
+);
+
+COPY "offense_codes" FROM '/tmp/codes_2014-07-01.csv' WITH CSV HEADER;
