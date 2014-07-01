@@ -24,3 +24,22 @@ func TestParseOffenseCodesCSV(t *testing.T) {
 		t.Fatalf("Unexpected string output of a code: %s", output)
 	}
 }
+
+func TestParseCrimeCSV(t *testing.T) {
+	raw, err := ParseCrimeCSV("example_crimes.csv")
+	if err != nil {
+		t.Fatalf("Error during ParseCrimeCSV: %s", err)
+	}
+	if len(raw) != 7 {
+		t.Fatalf("Unexpected length of raw crimes: %d", len(raw))
+	}
+
+	// Convert to crimes
+	crimes, err := ConvertRawCrimes(raw)
+	if err != nil {
+		t.Fatalf("Unexpected error during convert crimes: %d", len(crimes))
+	}
+	if len(crimes) != 7 {
+		t.Fatalf("Unexpected length of converted crimes: %d", len(crimes))
+	}
+}
